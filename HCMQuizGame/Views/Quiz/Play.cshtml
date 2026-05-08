@@ -1,0 +1,550 @@
+﻿```html
+@{
+    ViewData["Title"] = "Thi";
+}
+
+
+<style>
+
+    body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(rgba(120,0,0,0.88), rgba(80,0,0,0.9)), url('https://images.unsplash.com/photo-1521295121783-8a321d551ad2?q=80&w=2070');
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+        font-family: Arial;
+        overflow-x: hidden;
+    }
+
+    .quiz-box {
+        width: 1100px;
+        margin: auto;
+        margin-top: 40px;
+        background: rgba(255,255,255,0.96);
+        border-radius: 35px;
+        padding: 45px;
+        box-shadow: 0 15px 50px rgba(0,0,0,0.35);
+        backdrop-filter: blur(10px);
+        border: 4px solid rgba(255,215,0,0.3);
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 35px;
+    }
+
+    .question-number {
+        font-size: 34px;
+        font-weight: bold;
+        color: #c40000;
+    }
+
+    .timer {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        background: linear-gradient(135deg,#ff0000,#b30000);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        box-shadow: 0 0 25px rgba(255,0,0,0.6);
+        animation: pulse 1s infinite;
+    }
+
+    @@keyframes pulse {
+
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.08);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .question-content {
+        background: linear-gradient(to right,#fff5f5,#ffffff);
+        border-left: 10px solid #d40000;
+        padding: 35px;
+        border-radius: 25px;
+        font-size: 30px;
+        font-weight: bold;
+        color: #222;
+        line-height: 1.7;
+        margin-bottom: 35px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .answers {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    .answer-btn {
+        border: none;
+        border-radius: 25px;
+        min-height: 130px;
+        padding: 25px;
+        font-size: 23px;
+        font-weight: bold;
+        text-align: left;
+        transition: 0.3s;
+        line-height: 1.6;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .answer-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.3);
+            transition: 0.5s;
+        }
+
+        .answer-btn:hover::before {
+            left: 100%;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+        }
+
+    #btnA {
+        background: linear-gradient(135deg,#ff4d4d,#cc0000);
+        color: white;
+    }
+
+    #btnB {
+        background: linear-gradient(135deg,#ffd633,#e6b800);
+        color: black;
+    }
+
+    #btnC {
+        background: linear-gradient(135deg,#4da6ff,#0066cc);
+        color: white;
+    }
+
+    #btnD {
+        background: linear-gradient(135deg,#66cc66,#248f24);
+        color: white;
+    }
+
+    .player-info {
+        text-align: center;
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        margin-top: 25px;
+        text-shadow: 0 3px 10px rgba(0,0,0,0.4);
+    }
+
+</style>
+
+
+
+<div class="quiz-box">
+
+    <div>
+
+        <span class="question-number"
+              id="questionNumber">
+
+            Câu 1/20
+
+        </span>
+
+        <span class="timer"
+              id="timer">
+
+            20
+
+        </span>
+
+    </div>
+
+    <div class="question-content"
+         id="questionContent">
+    </div>
+
+    <button class="answer-btn"
+            id="btnA"
+            onclick="chooseAnswer('A',this)">
+    </button>
+
+    <button class="answer-btn"
+            id="btnB"
+            onclick="chooseAnswer('B',this)">
+    </button>
+
+    <button class="answer-btn"
+            id="btnC"
+            onclick="chooseAnswer('C',this)">
+    </button>
+
+    <button class="answer-btn"
+            id="btnD"
+            onclick="chooseAnswer('D',this)">
+    </button>
+
+</div>
+<input type="hidden"
+       id="playerName"
+       value="@ViewBag.PlayerName" />
+<script>
+
+    let currentQuestion = 0;
+
+    let score = 0;
+
+    let totalTime = 0;
+
+    let answered = false;
+
+    let timer;
+
+    const questions = [
+
+    {
+    question:"Quan điểm của Hồ Chí Minh về vai trò của văn hóa đạo đức, lối sống thể hiện:",
+    A:"Văn hóa đạo đức, lối sống nâng cao phẩm giá, phong cách lành mạnh cho con người, hướng con người tới các giá trị chân, thiện, mỹ.",
+    B:"Văn hóa đạo đức, lối sống có được phẩm giá, có được phong cách lành mạnh cho dân.",
+    C:"Văn hóa đạo đức, lối sống chỉ đạo cho con người, làm cho con người có các giá trị chân, thiện, mỹ.",
+    D:"Văn hóa đạo đức, lối sống thu phục, làm cho người dân, học các giá trị chân, thiện, mỹ.",
+    correct:"C"
+    },
+
+    {
+    question:"Xác định định nghĩa văn hóa theo quan điểm Hồ Chí Minh là:",
+    A:"Văn hóa bao gồm toàn bộ những giá trị tinh thần mà loài người đã sáng tạo ra, nằm đáp ứng sự sinh tồn của loài người.",
+    B:"Văn hóa bao gồm toàn bộ những giá trị mà loài người đã gây dựng ra và cũng là mục đích duy nhất của loài người.",
+    C:"Văn hóa là sự tổng hợp của mọi phương thức sinh hoạt cùng với biểu hiện của nó mà loài người đã sản sinh ra, nhằm thích ứng những nhu cầu đời sống và đòi hỏi của sự sinh tồn.",
+    D:"Văn hóa bao gồm toàn bộ những giá trị vật chất mà loài người đã sáng tạo ra, nhằm đáp ứng sự tồn tại của loài người",
+    correct:"C"
+    },
+
+    {
+    question:"Nói một cách khái quát, quan điểm của Hồ Chí Minh về xây dựng văn hóa mới Việt Nam, đó là:",
+    A:"Nền văn hóa toàn diện, dân tộc, và toàn dân, hội nhập.",
+    B:"Nền văn hóa toàn diện, nhân văn và phát triển hội nhập.",
+    C:"Nền văn hóa toàn diện, giữ gìn được cốt cách văn hóa dân tộc, bảo đảm tính khoa học, tiến bộ và nhân văn.",
+    D:"Nền văn hóa toàn diện, dân tộc và toàn dân.",
+    correct:"C"
+    },
+
+    {
+    question:"Nhận diện nét đặc sắc trong quan niệm của Hồ Chí Minh về con người là:",
+    A:"Nhìn nhận đặc điểm con người Việt Nam với những điều kiện khó xác định với những cấu trúc kinh tế, xã hội cụ thể.",
+    B:"Nhìn nhận đặc điểm con người Việt Nam với những điều kiện truyền thống, văn hóa phức tạp, với những cấu trúc kinh tế, xã hội cụ thể.",
+    C:"Nhìn nhận đặc điểm con người Việt Nam với những điều kiện lịch sử cụ thể, với những cấu trúc kinh tế, xã hội cụ thể.",
+    D:"Nhìn nhận đặc điểm con người Việt Nam với những điều kiện tổng quát, bao trùm với những cấu trúc kinh tế, xã hội.",
+    correct:"A"
+    },
+
+    {
+    question:"Xác định quan điểm của Hồ Chí Minh về vai trò và sức mạnh của đạo đức cách mạng là:",
+    A:"Đạo đức là gốc của người cách mạng; chính đạo đức là nhân tố quyết định nhất rèn luyện con người.",
+    B:"Đạo đức là gốc, là tiêu chí duy nhất để xây dựng con người mới, của xã hội mới.",
+    C:"Đạo đức là gốc, là nền tảng tinh thần của xã hội, là hành trang của mỗi người dân.",
+    D:"Đạo đức là gốc, là nền tảng tinh thần của xã hội, của người cách mạng; đạo đức là nhân tố tạo nên sức hấp dẫn của chủ nghĩa xã hội.",
+    correct:"D"
+    },
+
+    {
+    question:"Theo quan điểm của Hồ Chí Minh, Đảng Cộng sản Việt Nam không đạo đức, không văn minh thì sẽ:",
+    A:"Mất quyền lãnh đạo và tổ chức lỏng lẻo.",
+    B:"Mất quyền lãnh đạo và là một tổ chức không trong sạch, vững mạnh.",
+    C:"Không được các đảng Cộng sản trên thế giới thừa nhận.",
+    D:"Không còn đội ngũ đảng viên đông đảo.",
+    correct:"B"
+    },
+
+    {
+    question:"Lý giải nội dung của chuẩn mực đạo đức thương yêu con người, sống có tình có nghĩa theo quan điểm của Hồ Chí Minh là:",
+    A:"Một tình cảm rộng lớn, trước hết dành cho những người nghèo khổ, bị tước đoạt nhân phẩm.",
+    B:"Một tình cảm nhân ái rộng lớn, trước hết dành cho những người khó khăn nhất, nghèo đói nhất.",
+    C:"Tình cảm nhân ái sâu sắc, rộng lớn, trước hết dành cho những người nghèo khổ, bị mất quyền, bị áp bức, bị bóc lột không phân biệt màu da, dân tộc.",
+    D:"Một tình cảm rộng lớn, trước hết dành cho những người bị áp bức và bị tra tấn, bị tù đày.",
+    correct:"C"
+    },
+
+    {
+    question:"Vận dụng quan điểm của Hồ Chí Minh về văn hóa , theo tinh thần các nghị quyết của Đảng, chúng ta phải nhận thức sâu sắc, đúng đắn, đầy đủ vai trò, sứ mệnh của văn hóa đối với:",
+    A:"Sự ứng xử văn minh.",
+    B:"Sự phát triển bền vững.",
+    C:"Sự phát triển giai cấp nông dân, tầng lớp trí thức.",
+    D:"Sự phát triển giai cấp công nhân, nông dân.",
+    correct:"B"
+    },
+
+    {
+    question:"Một trong những yếu tố tác động đến việc phải chú trọng hơn nữa xây dựng văn hóa, đạo đức, con người Việt Nam hiện nay, là:",
+    A:"Môi trường văn hóa còn yếu kém; tệ nạn xã hội và một số loại tội phạm có chiều hướng gia tăng.",
+    B:"Môi trường văn hóa còn tồn tại những hình thức cũ kĩ, không phù hợp; tệ nạn xã hội một số loại tội phạm có chiều hướng gia tăng.",
+    C:"Môi trường văn hóa còn tồn tại những biểu hiện thiếu lành mạnh, ngoại lai, trái với thuần phong, mỹ tục; tệ nạn xã hội một số loại tội phạm có chiều hướng gia tăng.",
+    D:"Môi trường văn hóa còn phiến diện, chật hẹp, lạc hậu; tệ nạn xã hội và một số loại tội phạm có chiều hướng gia tăng.",
+    correct:"C"
+    },
+
+    {
+    question:"Xác định một số cách tiếp cận của Hồ Chí Minh về văn hóa là:",
+    A:"Tiếp cận theo nghĩa rộng, chỉ đến giá trị vật chất của con người, giá trị tinh thần của dân tộc và cả nhân loại.",
+    B:"Tiếp cận theo nghĩa kế thừa những giá trị truyền thống của dân tộc.",
+    C:"Tiếp cận theo nghĩa hẹp là đời sống tinh thần của xã hội, thuộc kiến trúc thượng tầng, chăm lo cho con người.",
+    D:"Tiếp cận theo nghĩa rộng, tổng hợp mọi phương thức sinh hoạt của con người; tiếp cận theo nghĩa hẹp là đời sống tinh thần của xã hội, thuộc kiến trúc thượng tầng.",
+    correct:"D"
+    },
+
+    {
+    question:"Xác định quan điểm của Hồ Chí Minh về các nguyên tắc xây dựng đạo đức cách mạng là:",
+    A:"Nói đi đôi với làm, nêu gương về đạo đức; xây dựng đi đôi với chống; tu dưỡng đạo đức suốt đời.",
+    B:"Nói đi đôi với làm, nêu gương về đạo đức, phải tu dưỡng đạo đức công – nông và chuyên môn suốt đời.",
+    C:"Tập trung dân chủ, nêu gương, phải tu dưỡng đạo đức công – nông và kiến thức suốt đời.",
+    D:"Phải tu dưỡng đạo đức cách mạng suốt đời, nói đi đôi với làm công việc.",
+    correct:"A"
+    },
+
+    {
+    question:"Hồ Chí Minh viết: “Đạo đức cách mạng không phải trên trời sa xuống. Nó do đấu tranh, rèn luyện bền bỉ hàng ngày mà phát triển và củng cố. Cũng như ngọc càng mài càng sáng, vàng càng luyện càng trong”. Đoạn viết trên đề cập đến nguyên tắc xây dựng đạo đức cách mạng nào?",
+    A:"Tập trung dân chủ.",
+    B:"Tu dưỡng đạo đức suốt đời.",
+    C:"Tu dưỡng phẩm giá.",
+    D:"Tập thể lãnh đạo, cá nhân phụ trách.",
+    correct:"B"
+    },
+
+    {
+    question:"Lựa chọn đúng để điền vào phần khuyết trong đoạn viết của Hồ Chí Minh: “Cũng như sông thì có nguồn mới có nước, không có nguồn thì sông cạn. Cây phải có gốc, không có gốc thì cây héo. Người cách mạng phải có .............., không có .............. thì dù tài giỏi mấy cũng không lãnh đạo được nhân dân”.",
+    A:"Tri thức",
+    B:"Của cải",
+    C:"Đạo đức",
+    D:"Sức mạnh",
+    correct:"C"
+    },
+
+    {
+    question:"Làm sáng tỏ quan điểm của Hồ Chí Minh về sự cần thiết phải chăm lo giáo dục lý tưởng cách mạng, đạo đức, lối sống, văn hóa sinh viên:",
+    A:"Sinh viên là “người chủ tương lai của nước nhà” và là lực lượng lao động chủ yếu duy nhất của xã hội.",
+    B:"Sinh viên là “người chủ tương lai của nước nhà”, “là cầu nối không thể thiếu giữa các thế hệ” và là lực lượng lao động non trẻ, nhiều kinh nghiệm của xã hội.",
+    C:"Sinh viên là “cầu nối quan trọng giữa các thế hệ”, “người tiếp sức cách mạng cho thế hệ thanh niên già”.",
+    D:"Sinh viên là “người chủ tương lai của nước nhà”, “là cầu nối giữa các thế hệ”, “người tiếp sức cách mạng cho thế hệ thanh niên già, đồng thời là người phụ trách dìu dắt thế hệ thanh niên tương lai.",
+    correct:"D"
+    },
+
+    {
+    question:"Học tập và làm theo tư tưởng, tấm gương đạo đức Hồ Chí Minh trong bối cảnh hiện nay, sinh viên cần thay",
+    A:"Tu dưỡng, rèn luyện theo tấm gương cần, kiệm, liêm, chính, chí công vô tư, đức khiêm tốn, trung thực.",
+    B:"Tu dưỡng, rèn luyện theo tấm gương cần, kiệm, liêm, chính, chí công vô tư trí thức phong phú.",
+    C:"Tu dưỡng, rèn luyện theo tầm gương cầnn, kiệm, liêm, chính, chí công vô tư trí tuệ cách mạng.",
+    D:"Tu dưỡng, rèn luyện theo tấm gương cần, kiệm, liêm, chính, chí công vô tư tập trung dân chủ.",
+    correct:"A"
+    },
+
+    {
+    question:"Quan điểm của Hồ Chí Minh về văn hóa là một mặt trận được thể hiện:",
+    A:"Mặt trận văn hóa là cuộc đấu tranh cách mạng trên lĩnh vực giáo dục – tư tưởng.",
+    B:"Mặt trận văn hóa là cuộc đấu tranh cách mạng trên lĩnh vực tư tưởng – chính trị.",
+    C:"Mặt trận văn hóa là cuộc đấu tranh cách mạng trên lĩnh vực văn hóa – tư tưởng.",
+    D:"Mặt trận văn hóa là cuộc đấu tranh cách mạng trên lĩnh vực văn học, văn nghệ.",
+    correct:"C"
+    },
+
+    {
+    question:"Lựa chọn đúng để điền vào phần khuyết trong đoạn viết của Hồ Chí Minh: “Đảng cần phải chăm lo giáo dục ..................... cho đoàn viên và thanh niên, đào tạo họ thành những người thừa kế xây dựng chủ nghĩa xã hội vừa “hồng” vừa “chuyên”.",
+    A:"Truyền thống dân tộc.",
+    B:"Trí tuệ sáng tạo.",
+    C:"Đạo đức cách mạng.",
+    D:"Tri thức mới.",
+    correct:"C"
+    },
+
+    {
+    question:"Lý giải nội dung của chuẩn mực đạo đức hiếu với dân theo quan điểm của Hồ Chí Minh là:",
+    A:"Trung thành với sự nghiệp dựng nước và giữ nước; là suốt đời phấn đấu cho công nhân, nông dân và trí thức; đi theo nhân dân.",
+    B:"Tuyệt đối trung thành với sự nghiệp dân giàu, nước mạnh. Hiếu thảo với anh em, bạn bè, cha mẹ.",
+    C:"Thương dân, quan tâm chu đáo, hoàn toàn nghe theo, lấy dân làm gốc, hết lòng, hết sức phục vụ nhân dân.",
+    D:"Thương dân, tin dân, thân dân, học hỏi dân, lấy trí tuệ ở dân, kính trọng dân, lấy dân làm gốc, hết lòng, hết sức phục vụ nhân dân.",
+    correct:"D"
+    },
+
+    {
+    question:"Quan điểm của Hồ Chí Minh về văn hóa phục vụ quần chúng nhân dân được thể hiện là:",
+    A:"Các hoạt động văn hóa phải sôi nổi, nhiệt tình, dân dã, phản ánh được tư tưởng và khát vọng của quần chúng; chiến sĩ văn hóa phải hiểu và đánh giá đúng quần chúng.",
+    B:"Các hoạt động văn hóa phải mang phong cách quần chúng, phản ánh được tư tưởng và khát vọng của quần chúng; chiến sĩ văn hóa phải hiểu và đánh giá đúng quần chúng.",
+    C:"Các hoạt động văn hóa phải tính bình dân chủ nghĩa, phản ảnh được tư tưởng và khát vọng của quần chúng; chiến sĩ văn hóa phải hiểu và đánh giá đúng quần chúng.",
+    D:"Các hoạt động văn hóa phải phải trở về với cuộc sống thực tại của quần chúng, phản ánh được tư tưởng và khát vọng của quần chúng; chiến sĩ văn hóa phải hiểu và đánh giá đúng quần chúng.",
+    correct:"D"
+    },
+
+    {
+    question:"Một trong những quan điểm về xây dựng con người được Hồ Chí Minh xác định là:",
+    A:"Xác định điều kiện sau cùng của việc xây dựng con người.",
+    B:"Xác định một số yếu tố quốc tế của việc xây dựng con người.",
+    C:"Nội dung xây dựng con người.",
+    D:"Xác định nhân tố của việc xây dựng con người.",
+    correct:"C"
+    }
+
+    ];
+  
+    loadQuestion();
+
+    function loadQuestion()
+    {
+        answered = false;
+
+        document.getElementById("questionNumber")
+            .innerText =
+            "Câu " + (currentQuestion + 1) + "/" + questions.length;
+
+        document.getElementById("questionContent")
+            .innerText =
+            questions[currentQuestion].question;
+
+        document.getElementById("btnA")
+            .innerText =
+            "A. " + questions[currentQuestion].A;
+
+        document.getElementById("btnB")
+            .innerText =
+            "B. " + questions[currentQuestion].B;
+
+        document.getElementById("btnC")
+            .innerText =
+            "C. " + questions[currentQuestion].C;
+
+        document.getElementById("btnD")
+            .innerText =
+            "D. " + questions[currentQuestion].D;
+
+        resetButtons();
+
+        startTimer();
+    }
+
+    function startTimer()
+    {
+        let time = 20;
+
+        document.getElementById("timer")
+            .innerText = time;
+
+        clearInterval(timer);
+
+        timer = setInterval(function () {
+
+            time--;
+
+            totalTime++;
+
+            document.getElementById("timer")
+                .innerText = time;
+
+            if(time <= 0)
+            {
+                clearInterval(timer);
+
+                nextQuestion();
+            }
+
+        },1000);
+    }
+
+    function chooseAnswer(answer,button)
+    {
+        if(answered) return;
+
+        answered = true;
+
+        clearInterval(timer);
+
+        let correct =
+            questions[currentQuestion].correct;
+
+        if(answer == correct)
+        {
+            score += 0.5;
+
+            button.style.background = "green";
+            button.style.color = "black";
+        }
+        else
+        {
+            button.style.background = "red";
+            button.style.color = "white";
+        }
+
+        setTimeout(function () {
+
+            nextQuestion();
+
+        },3000);
+    }
+
+      function nextQuestion()
+    {
+        currentQuestion++;
+
+        if(currentQuestion >= questions.length)
+        {
+            submitResult();
+
+            return;
+        }
+
+        loadQuestion();
+    }
+
+    function resetButtons()
+    {
+        const buttons =
+            document.querySelectorAll(".answer-btn");
+
+        buttons.forEach(btn => {
+
+            btn.style.background = "#f3f3f3";
+
+            btn.style.color = "black";
+
+        });
+    }
+        async function submitResult()
+    {
+        const playerName =
+            document.getElementById("playerName").value;
+
+        await fetch("/Quiz/SubmitResult",
+        {
+            method: "POST",
+
+            headers:
+            {
+                "Content-Type":
+                "application/x-www-form-urlencoded"
+            },
+
+            body:
+                `playerName=${playerName}&score=${score}&timeUsed=${totalTime}`
+        });
+
+        window.location.href =
+            "/Quiz/Leaderboard";
+    }
+</script>
