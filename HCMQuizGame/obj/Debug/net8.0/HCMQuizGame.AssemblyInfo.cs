@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HCMQuizGame")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+678a8a13ce74190c1c63510060aa87c8bb0090ae")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+336309826ea60acca62b96d4b3b1087dfbcf0114")]
 [assembly: System.Reflection.AssemblyProductAttribute("HCMQuizGame")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HCMQuizGame")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
