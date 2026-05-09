@@ -1,18 +1,34 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Admin";
 }
 
 <style>
 
-    body {
-        background: linear-gradient(to bottom right, #fff5f5, white);
+    * {
+        box-sizing: border-box;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        overflow-x: hidden;
         font-family: Arial;
+        background: linear-gradient(to bottom right,#fff5f5,white);
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
     }
 
     .admin-card {
-        width: 700px;
-        margin: auto;
-        margin-top: 120px;
+        width: 100%;
+        max-width: 700px;
         background: white;
         padding: 60px;
         border-radius: 30px;
@@ -24,6 +40,15 @@
         font-size: 55px;
         font-weight: bold;
         color: #c40000;
+        word-wrap: break-word;
+    }
+
+    #playerCountBox {
+        margin-top: 30px;
+        font-size: 35px;
+        font-weight: bold;
+        color: #c40000;
+        line-height: 1.5;
     }
 
     .start-btn {
@@ -36,8 +61,46 @@
         color: white;
         font-size: 35px;
         font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
     }
 
+        .start-btn:hover {
+            transform: scale(1.02);
+        }
+
+    /* MOBILE */
+    @@media (max-width:768px) {
+        body
+
+    {
+        padding: 15px;
+        align-items: flex-start;
+    }
+
+    .admin-card {
+        padding: 25px;
+        border-radius: 20px;
+        margin-top: 30px;
+    }
+
+    .title {
+        font-size: 34px;
+    }
+
+    #playerCountBox {
+        font-size: 24px;
+        margin-top: 20px;
+    }
+
+    .start-btn {
+        height: 60px;
+        font-size: 24px;
+        margin-top: 30px;
+        border-radius: 20px;
+    }
+
+    }
 </style>
 
 <div class="admin-card">
@@ -45,12 +108,8 @@
     <div class="title">
         🎮 ADMIN PANEL
     </div>
-    <div id="playerCountBox"
-         style="
-        margin-top:30px;
-        font-size:35px;
-        font-weight:bold;
-        color:#c40000;">
+
+    <div id="playerCountBox">
 
         👥 Số người tham gia:
         <span id="playerCount">0</span>

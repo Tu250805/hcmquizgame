@@ -6,7 +6,9 @@
 
     body {
         background: linear-gradient(to bottom right, #fff5f5, #ffffff);
-        overflow: hidden;
+        overflow-x: hidden;
+        margin: 0;
+        padding: 0;
     }
 
     .main-bg {
@@ -16,6 +18,7 @@
         top: 0;
         left: 0;
         z-index: -1;
+        overflow: hidden;
     }
 
     .left-wave {
@@ -43,6 +46,7 @@
 
     .join-card {
         width: 600px;
+        max-width: 92%;
         background: white;
         margin: auto;
         margin-top: 80px;
@@ -51,6 +55,8 @@
         box-shadow: 0 10px 40px rgba(0,0,0,0.15);
         text-align: center;
         border: 3px solid #ffd6d6;
+        position: relative;
+        z-index: 2;
     }
 
     .main-title {
@@ -110,6 +116,57 @@
         left: 40px;
         top: 140px;
         width: 280px;
+        z-index: 1;
+    }
+
+    /* MOBILE */
+    @@media (max-width: 768px) {
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .join-card {
+            width: 92%;
+            padding: 25px;
+            margin-top: 40px;
+            border-radius: 20px;
+        }
+
+        .main-title {
+            font-size: 42px;
+        }
+
+        .mini-text {
+            font-size: 28px;
+        }
+
+        .sub-text {
+            font-size: 16px;
+        }
+
+        .join-input {
+            height: 50px;
+            font-size: 18px;
+        }
+
+        .join-btn {
+            height: 55px;
+            font-size: 24px;
+        }
+
+        .flag {
+            width: 120px;
+            left: 10px;
+            top: 80px;
+            opacity: 0.9;
+        }
+
+        .left-wave,
+        .right-wave {
+            width: 300px;
+            height: 300px;
+        }
     }
 
 </style>

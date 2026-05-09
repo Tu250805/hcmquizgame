@@ -3,6 +3,14 @@
 }
 
 <style>
+    html, body {
+        overflow-x: hidden !important;
+        max-width: 100% !important;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
 
     body {
         margin: 0;
@@ -39,6 +47,7 @@
 
     .waiting-container {
         width: 750px;
+        max-width: 92%;
         margin: auto;
         margin-top: 70px;
         background: white;
@@ -83,6 +92,29 @@
         font-weight: bold;
         margin-top: 20px;
         animation: pulse 1.3s infinite;
+    }
+
+    .waiting-container {
+        width: 92% !important;
+        padding: 25px !important;
+    }
+
+    .main-title {
+        font-size: 36px !important;
+    }
+
+    .welcome-text {
+        font-size: 24px !important;
+    }
+
+    .waiting-text {
+        font-size: 22px !important;
+    }
+
+    .bg-left,
+    .bg-right {
+        width: 320px;
+        height: 320px;
     }
 
     @@keyframes pulse {
@@ -145,6 +177,35 @@
         font-size: 45px;
         color: #d90000;
         opacity: 0.8;
+    }
+
+    @@media (max-width: 768px) {
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .waiting-card,
+        .main-card,
+        .container {
+            width: 92% !important;
+            margin: auto !important;
+            padding: 20px !important;
+        }
+
+        h1, h2 {
+            font-size: 32px !important;
+        }
+
+        .player-name,
+        .status-text {
+            font-size: 22px !important;
+        }
+
+        img {
+            max-width: 100% !important;
+            height: auto !important;
+        }
     }
 
 </style>
