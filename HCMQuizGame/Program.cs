@@ -23,7 +23,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Join}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHub<HCMQuizGame.Hubs.QuizHub>("/quizHub");
 
