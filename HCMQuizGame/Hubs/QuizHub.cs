@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System;
 
 namespace HCMQuizGame.Hubs
 {
@@ -19,6 +20,13 @@ namespace HCMQuizGame.Hubs
         {
             await Clients.All.SendAsync("GameStarted");
         }
+        
+public async Task ReloadLeaderboard()
+        {
+            await Clients.All.SendAsync("ReloadLeaderboard");
+        }
+
+
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             OnlinePlayers--;

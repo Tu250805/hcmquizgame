@@ -1,15 +1,21 @@
 ﻿
-using Microsoft.AspNetCore.Mvc;
 using HCMQuizGame.Data;
 using HCMQuizGame.Models;
+using HCMQuizGame.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace HCMQuizGame.Controllers
 {
-    public class QuizController : Controller
+public class QuizController : Controller
     {
-        public IActionResult Join()
+        private readonly IHubContext<QuizHub> QuizHubContext;
+
+        public QuizController(
+            IHubContext<QuizHub> hubContext)
         {
-            return View();
+            QuizHubContext = hubContext;
         }
 
         [HttpPost]
@@ -31,11 +37,12 @@ namespace HCMQuizGame.Controllers
             return View();
         }
 
-        [HttpPost]
-        public IActionResult SubmitResult(
-            string playerName,
-            double score,
-            int timeUsed)
+     
+[HttpPost]
+public async Task<IActionResult> SubmitResult(
+    string playerName,
+    double score,
+    int timeUsed)
         {
             GameData.Leaderboard.Add(new PlayerResult
             {
@@ -45,8 +52,14 @@ namespace HCMQuizGame.Controllers
                 FinishedAt = DateTime.Now
             });
 
+            await QuizHubContext.Clients.All.SendAsync(
+                "ReloadLeaderboard"
+            );
+
             return Ok();
         }
+
+
 
         public IActionResult Leaderboard()
         {

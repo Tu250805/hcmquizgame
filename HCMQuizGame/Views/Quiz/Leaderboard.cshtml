@@ -297,3 +297,41 @@
     </div>
 
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
+<script>
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/quizHub")
+        .build();
+
+    connection.start();
+
+    connection.on("ReloadLeaderboard", function () {
+
+        location.reload();
+
+    });
+
+</script>
+```
+```html id="u7"
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+
+<script>
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/quizHub")
+        .build();
+
+    connection.start();
+
+    connection.on("ReloadLeaderboard", function () {
+
+        location.reload();
+
+    });
+
+</script>
+
